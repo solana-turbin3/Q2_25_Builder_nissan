@@ -10,6 +10,7 @@ This repository contains all code samples and projects developed during the Sola
 - **solana-starter**: Forked from [solana-turbin3/solana-starter](https://github.com/solana-turbin3/solana-starter) for class exercises
 - **nft-mint**: NFT minting program with metadata support
 - **poseidon/vote-program**: Experimental implementation using [Poseidon](https://github.com/Turbin3/poseidon), a TypeScript to Anchor transpiler that enables writing Solana programs in TypeScript. This project demonstrates the use of this innovative tool to create a voting program that gets transpiled to Rust/Anchor.
+- **vault-anchor**: A Solana program implementing a secure vault system with deposit, withdraw, and close functionality using PDAs (Program Derived Addresses) for secure fund management.
 
 ### Q1 2025
 - **solana-starter**: Forked from [solana-turbin3/solana-starter](https://github.com/solana-turbin3/solana-starter) for class exercises
