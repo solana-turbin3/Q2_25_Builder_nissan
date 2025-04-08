@@ -9,6 +9,7 @@ This repository contains all code samples and projects developed during the Sola
 - **airdrop-rust**: Rust implementation of an airdrop program
 - **solana-starter**: Forked from [solana-turbin3/solana-starter](https://github.com/solana-turbin3/solana-starter) for class exercises
 - **nft-mint**: NFT minting program with metadata support
+- **poseidon/vote-program**: Experimental implementation using [Poseidon](https://github.com/Turbin3/poseidon), a TypeScript to Anchor transpiler that enables writing Solana programs in TypeScript. This project demonstrates the use of this innovative tool to create a voting program that gets transpiled to Rust/Anchor.
 
 ### Q1 2025
 - **solana-starter**: Forked from [solana-turbin3/solana-starter](https://github.com/solana-turbin3/solana-starter) for class exercises
@@ -82,4 +83,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Turbin3 team for the amazing learning program
 - Solana community for their support and resources
 - [solana-turbin3/solana-starter](https://github.com/solana-turbin3/solana-starter) for the starter template
-- [rkmonarch/blinks-example](https://github.com/rkmonarch/blinks-example) for the Blinks example 
+- [rkmonarch/blinks-example](https://github.com/rkmonarch/blinks-example) for the Blinks example
+- [Turbin3/poseidon](https://github.com/Turbin3/poseidon) for the TypeScript to Anchor transpiler tutorial and framework 
