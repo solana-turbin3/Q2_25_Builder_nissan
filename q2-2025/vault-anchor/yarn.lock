@@ -172,10 +172,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.0":
-  version: 4.3.20
-  resolution: "@types/chai@npm:4.3.20"
-  checksum: 10c0/4601189d611752e65018f1ecadac82e94eed29f348e1d5430e5681a60b01e1ecf855d9bcc74ae43b07394751f184f6970fac2b5561fc57a1f36e93a0f5ffb6e8
+"@types/chai@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "@types/chai@npm:5.2.1"
+  dependencies:
+    "@types/deep-eql": "npm:*"
+  checksum: 10c0/f8a03c9f8450b7ab8df11f658c4194be17a6316b870490d5ffaf5289a3c0c0591ed6291b2d6551e181887c3eed89d0490744b3e569d9b23cf611b05f93e775b6
   languageName: node
   linkType: hard
 
@@ -188,6 +190,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/deep-eql@npm:*":
+  version: 4.0.2
+  resolution: "@types/deep-eql@npm:4.0.2"
+  checksum: 10c0/bf3f811843117900d7084b9d0c852da9a044d12eb40e6de73b552598a6843c21291a8a381b0532644574beecd5e3491c5ff3a0365ab86b15d59862c025384844
+  languageName: node
+  linkType: hard
+
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
@@ -195,14 +204,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^9.0.0":
-  version: 9.1.1
-  resolution: "@types/mocha@npm:9.1.1"
-  checksum: 10c0/d033742ce0c92b917815b6e515165ee396866d0db0c0bbe0c301e49402abe3a61bd51e5bb1df7577f1fac60c99ee505fa744f515b476cc934ecb57f709f327e9
+"@types/mocha@npm:^10.0.10":
+  version: 10.0.10
+  resolution: "@types/mocha@npm:10.0.10"
+  checksum: 10c0/d2b8c48138cde6923493e42b38e839695eb42edd04629abe480a8f34c0e3f50dd82a55832c2e8d2b6e6f9e4deb492d7d733e600fbbdd5a0ceccbcfc6844ff9d5
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^22.14.0":
   version: 22.14.0
   resolution: "@types/node@npm:22.14.0"
   dependencies:
@@ -1721,8 +1730,9 @@ __metadata:
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.0"
     "@types/bn.js": "npm:^5.1.0"
-    "@types/chai": "npm:^4.3.0"
-    "@types/mocha": "npm:^9.0.0"
+    "@types/chai": "npm:^5.2.1"
+    "@types/mocha": "npm:^10.0.10"
+    "@types/node": "npm:^22.14.0"
     chai: "npm:^4.3.4"
     mocha: "npm:^9.0.3"
     prettier: "npm:^2.6.2"
