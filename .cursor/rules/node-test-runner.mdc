@@ -1,5 +1,5 @@
 ---
-description: Guidelines for using Node.js test runner instead of Mocha and Chai
+description: 
 globs: 
 alwaysApply: false
 ---
