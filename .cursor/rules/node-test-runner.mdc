@@ -1,17 +1,17 @@
 ---
-name: node-test-runner
 description: Guidelines for using Node.js test runner instead of Mocha and Chai
-glob: **/*.{test,spec}.{ts,tsx,js,jsx}
+globs: 
+alwaysApply: false
 ---
-
 # Node.js Test Runner Guidelines
 
 ## Key Points
 - **Use Node.js Test Runner**: Always use the built-in Node.js test runner instead of Mocha and Chai
 - **Modern Approach**: Node.js test runner provides native testing capabilities without external dependencies
-- **Compatible with TypeScript**: Works well with TypeScript projects through ts-node
+- **Compatible with TypeScript**: Works well with TypeScript projects through tsx
 - **Built-in Performance**: Better performance as it's built into Node.js
 - **Native ESM Support**: First-class support for ES Modules
+- **Anchor Integration**: Seamlessly works with Anchor projects
 
 ## Implementation Guide
 
@@ -34,11 +34,75 @@ glob: **/*.{test,spec}.{ts,tsx,js,jsx}
 // package.json
 {
   "scripts": {
-    "test": "node --import tsx --test",
-    "test:watch": "node --import tsx --test --watch",
+    "test": "node --import tsx --test tests/**/*.ts",
+    "test:watch": "node --import tsx --test --watch tests/**/*.ts",
     "test:coverage": "node --import tsx --test --experimental-test-coverage"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "@types/node": "latest"
   }
 }
+```
+
+3. Update tsconfig.json for Node.js test runner:
+
+```json
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2022", "dom"],
+    "module": "commonjs",
+    "target": "es2022",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+4. For Anchor projects:
+
+a. Update Anchor.toml to use Node.js test runner:
+```toml
+[scripts]
+test = "yarn test"  # This will use the Node.js test runner configuration from package.json
+```
+
+b. Remove Mocha/Chai related dependencies from package.json:
+```json
+// ❌ REMOVE these from devDependencies
+{
+  "@types/chai": "^4.3.0",
+  "@types/mocha": "^9.0.0",
+  "chai": "^4.3.4",
+  "mocha": "^9.0.3",
+  "ts-mocha": "^10.0.0"
+}
+```
+
+c. Update Anchor test files to use Node.js assertions:
+```typescript
+// ❌ AVOID: Old Mocha/Chai pattern for Anchor tests
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+
+// ✅ USE: Node.js test runner pattern for Anchor tests
+import { describe, test } from "node:test";
+import assert from "node:assert/strict";
+import * as anchor from "@coral-xyz/anchor";
+
+describe("My Anchor Program", async () => {
+  // Configure the client to use the local cluster
+  anchor.setProvider(anchor.AnchorProvider.env());
+  const program = anchor.workspace.myProgram as Program<MyProgram>;
+
+  test("Initialize!", async () => {
+    const tx = await program.methods.initialize().rpc();
+    assert.ok(tx, "Transaction should be defined");
+  });
+});
 ```
 
 ## Test Structure
