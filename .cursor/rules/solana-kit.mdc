@@ -1,0 +1,111 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Solana Kit Usage Guidelines
+
+## Key Points
+- **Use @solana/kit**: Always use @solana/kit for Solana interactions instead of @solana/web3.js
+- **Modern API**: @solana/kit provides a more modern and intuitive API with better TypeScript support
+- **Composable Architecture**: Use the composable architecture pattern provided by @solana/kit
+- **Type Safety**: Benefit from enhanced type safety and better error handling
+- **React Integration**: Use built-in React hooks for seamless integration
+
+## Migration Points
+When working with Solana integrations:
+
+1. Replace imports from `@solana/web3.js` with the equivalent from `@solana/kit`
+2. Use the function-based composable approach rather than class-based approach
+3. Leverage built-in hooks for React components
+4. Take advantage of the improved error handling
+5. Use the new transaction builder pattern for better type safety
+
+## Examples
+
+### Connection Setup
+```typescript
+// ❌ AVOID: Old @solana/web3.js pattern
+import { Connection, clusterApiUrl } from '@solana/web3.js';
+const connection = new Connection(clusterApiUrl('devnet'));
+
+// ✅ USE: New @solana/kit pattern 
+import { createSolanaRpc } from '@solana/kit';
+const rpc = createSolanaRpc('devnet');
+```
+
+### Transaction Building
+```typescript
+// ❌ AVOID: Old transaction pattern
+import { Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
+const tx = new Transaction().add(
+  SystemProgram.transfer({
+    fromPubkey: sender,
+    toPubkey: recipient,
+    lamports: amount
+  })
+);
+
+// ✅ USE: New @solana/kit pattern
+import { createTransaction, transferSol } from '@solana/kit';
+const tx = createTransaction()
+  .add(transferSol({ source: sender, destination: recipient, amount }));
+```
+
+### React Hooks Integration
+```typescript
+// ❌ AVOID: Manual connection management
+import { Connection } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
+
+function YourComponent() {
+  const [connection, setConnection] = useState<Connection>();
+  
+  useEffect(() => {
+    setConnection(new Connection('https://api.devnet.solana.com'));
+  }, []);
+}
+
+// ✅ USE: @solana/kit hooks
+import { useConnection } from '@solana/kit';
+
+function YourComponent() {
+  const connection = useConnection('devnet');
+}
+```
+
+### Account Management
+```typescript
+// ❌ AVOID: Manual account lookup
+import { PublicKey } from '@solana/web3.js';
+const account = await connection.getAccountInfo(new PublicKey(address));
+
+// ✅ USE: @solana/kit account management
+import { getAccount } from '@solana/kit';
+const account = await getAccount(address);
+```
+
+### Program Interaction
+```typescript
+// ❌ AVOID: Manual program calls
+import { TransactionInstruction, PublicKey } from '@solana/web3.js';
+const instruction = new TransactionInstruction({
+  keys: [
+    { pubkey: payer, isSigner: true, isWritable: true },
+    { pubkey: recipient, isSigner: false, isWritable: true },
+  ],
+  programId: programId,
+  data: Buffer.from([/* instruction data */])
+});
+
+// ✅ USE: @solana/kit program interaction
+import { createInstruction } from '@solana/kit';
+const instruction = createInstruction('YourInstruction')
+  .accounts({
+    payer,
+    recipient
+  })
+  .args({
+    // Type-safe instruction arguments
+  });
+```

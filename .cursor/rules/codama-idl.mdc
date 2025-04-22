@@ -1,0 +1,97 @@
+---
+name: codama-idl
+description: Guidelines for using Codama for IDL client generation in tests
+glob: **/*.{test,spec}.{ts,tsx,js,jsx}
+---
+
+# Codama IDL Client Generation Guidelines
+
+## Key Points
+- **Use Codama**: Always use Codama for generating IDL clients in tests instead of manual client creation
+- **Type Safety**: Codama provides full TypeScript type safety and IntelliSense support
+- **Automatic Updates**: Clients automatically update when IDL changes
+- **Test-Specific**: Use Codama specifically for test environment client generation
+
+## Implementation Guide
+
+1. Install Codama as a dev dependency:
+```bash
+npm install --save-dev @codama/codama
+# or
+yarn add -D @codama/codama
+```
+
+2. Configure Codama in your test setup:
+```typescript
+import { CodamaClient } from '@codama/codama';
+import { IDL } from '../target/types/your_program';
+
+const client = new CodamaClient({
+  idl: IDL,
+  programId: 'your_program_id'
+});
+```
+
+## Best Practices
+
+### Test Client Setup
+```typescript
+// ❌ AVOID: Manual client creation
+import { Program } from '@coral-xyz/anchor';
+import { YourProgram } from '../target/types/your_program';
+
+const program = new Program<YourProgram>(IDL, programId, provider);
+
+// ✅ USE: Codama client generation
+import { CodamaClient } from '@codama/codama';
+import { IDL } from '../target/types/your_program';
+
+const client = new CodamaClient({
+  idl: IDL,
+  programId: 'your_program_id'
+});
+```
+
+### Account Interaction
+```typescript
+// ❌ AVOID: Manual account interaction
+const account = await program.account.yourAccount.fetch(pubkey);
+
+// ✅ USE: Codama typed account interaction
+const account = await client.accounts.yourAccount.get(pubkey);
+```
+
+### Instruction Building
+```typescript
+// ❌ AVOID: Manual instruction building
+const tx = await program.methods
+  .initialize()
+  .accounts({
+    account: pubkey,
+    user: wallet.publicKey,
+    systemProgram: SystemProgram.programId,
+  })
+  .rpc();
+
+// ✅ USE: Codama instruction builder
+const tx = await client.instructions
+  .initialize()
+  .account(pubkey)
+  .user(wallet.publicKey)
+  .systemProgram()
+  .send();
+```
+
+### Event Handling
+```typescript
+// ❌ AVOID: Manual event parsing
+program.addEventListener('YourEvent', (event, slot) => {
+  console.log(event);
+});
+
+// ✅ USE: Codama typed event handling
+client.events.onYourEvent((event) => {
+  // Type-safe event data
+  console.log(event.data);
+});
+```

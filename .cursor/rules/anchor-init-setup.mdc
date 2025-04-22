@@ -1,0 +1,173 @@
+---
+name: anchor-init-setup
+description: Post-initialization steps for Anchor projects using multiple template
+glob: {programs/**/src/**/*.rs,tests/**/*.ts}
+---
+
+# Anchor Multiple Template Setup Guidelines
+
+## Initial Structure Changes
+
+### Rename Instructions to Handlers
+1. Rename the `instructions` directory to `handlers` in each program:
+```bash
+mv programs/your-program/src/instructions programs/your-program/src/handlers
+```
+
+2. Update `lib.rs` references:
+```rust
+// ❌ AVOID: Old instructions module reference
+pub mod instructions;
+use instructions::*;
+
+// ✅ USE: New handlers module reference
+pub mod handlers;
+use handlers::*;
+```
+
+3. Update imports in handler files:
+```rust
+// ❌ AVOID: Old instruction path
+use crate::instructions::some_handler::*;
+
+// ✅ USE: New handler path
+use crate::handlers::some_handler::*;
+```
+
+## Test Setup Changes
+
+### Replace Mocha/Chai with Node Test Runner
+
+1. Update `Anchor.toml` test command:
+```toml
+# ❌ AVOID: Old test command
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+# ✅ USE: New test command
+test = "yarn run tsx --test --no-warnings tests/**/*.ts"
+```
+
+2. Update `package.json` dependencies:
+```json
+{
+  "devDependencies": {
+    // ❌ REMOVE these dependencies
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3",
+    "ts-mocha": "^10.0.0",
+    
+    // ✅ ADD these dependencies
+    "tsx": "^4.0.0",
+    "@codama/codama": "^latest"
+  }
+}
+```
+
+3. Remove Mocha/Chai types from `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "types": [
+      // ❌ REMOVE these types
+      "mocha",
+      "chai",
+      
+      // ✅ Keep other necessary types
+      "node"
+    ]
+  }
+}
+```
+
+### Update Test Files
+
+1. Replace test imports:
+```typescript
+// ❌ AVOID: Old Mocha/Chai imports
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+
+// ✅ USE: Node.js test runner imports
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+```
+
+2. Replace Anchor test client with Codama:
+```typescript
+// ❌ AVOID: Direct Anchor program usage
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { YourProgram } from "../target/types/your_program";
+
+const program = anchor.workspace.YourProgram as Program<YourProgram>;
+
+// ✅ USE: Codama client
+import { CodamaClient } from '@codama/codama';
+import { IDL } from '../target/types/your_program';
+
+const client = new CodamaClient({
+  idl: IDL,
+  programId: program.programId
+});
+```
+
+3. Update test assertions:
+```typescript
+// ❌ AVOID: Chai assertions
+expect(account.data).to.equal(expectedValue);
+expect(tx).to.not.be.null;
+
+// ✅ USE: Node.js assertions
+assert.strictEqual(account.data, expectedValue);
+assert.notEqual(tx, null);
+```
+
+### Example Test File Structure
+```typescript
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { CodamaClient } from '@codama/codama';
+import { IDL } from '../target/types/your_program';
+
+describe('Your Program Tests', () => {
+  const client = new CodamaClient({
+    idl: IDL,
+    programId: 'your_program_id'
+  });
+
+  it('should initialize program state', async () => {
+    const tx = await client.instructions
+      .initialize()
+      .accounts({
+        // account setup
+      })
+      .send();
+    
+    assert.ok(tx, 'Transaction should succeed');
+    
+    const state = await client.accounts.programState.get();
+    assert.strictEqual(state.isInitialized, true);
+  });
+});
+```
+
+## File Structure After Changes
+
+Your program structure should look like this:
+```
+programs/your-program/
+├── src/
+│   ├── lib.rs
+│   ├── handlers/           # ✅ Renamed from instructions/
+│   │   ├── mod.rs
+│   │   ├── initialize.rs
+│   │   └── other_handlers.rs
+│   ├── state/
+│   └── errors.rs
+└── Cargo.toml
+
+tests/
+├── your-program.ts        # ✅ Using Node.js test runner and Codama
+└── utils/
+    └── test-utils.ts
+``` 

@@ -1,0 +1,160 @@
+---
+name: node-test-runner
+description: Guidelines for using Node.js test runner instead of Mocha and Chai
+glob: **/*.{test,spec}.{ts,tsx,js,jsx}
+---
+
+# Node.js Test Runner Guidelines
+
+## Key Points
+- **Use Node.js Test Runner**: Always use the built-in Node.js test runner instead of Mocha and Chai
+- **Modern Approach**: Node.js test runner provides native testing capabilities without external dependencies
+- **Compatible with TypeScript**: Works well with TypeScript projects through ts-node
+- **Built-in Performance**: Better performance as it's built into Node.js
+- **Native ESM Support**: First-class support for ES Modules
+
+## Implementation Guide
+
+1. Replace Mocha/Chai dependencies with Node.js test runner:
+
+```json
+// package.json
+{
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "test:coverage": "node --test --experimental-test-coverage"
+  }
+}
+```
+
+2. Add TypeScript support if needed:
+
+```json
+// package.json
+{
+  "scripts": {
+    "test": "node --import tsx --test",
+    "test:watch": "node --import tsx --test --watch",
+    "test:coverage": "node --import tsx --test --experimental-test-coverage"
+  }
+}
+```
+
+## Test Structure
+
+### Basic Test Example
+```typescript
+// ❌ AVOID: Old Mocha/Chai pattern
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+
+describe('Calculator', () => {
+  it('should add two numbers', () => {
+    expect(1 + 1).to.equal(2);
+  });
+});
+
+// ✅ USE: Node.js test runner pattern
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+
+describe('Calculator', () => {
+  it('should add two numbers', () => {
+    assert.strictEqual(1 + 1, 2);
+  });
+});
+```
+
+### Async Tests
+```typescript
+// ✅ USE: Async test with Node.js test runner
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+
+describe('Async operations', () => {
+  it('should handle async operations', async () => {
+    const result = await someAsyncFunction();
+    assert.strictEqual(result, expectedValue);
+  });
+});
+```
+
+### Setup and Teardown
+```typescript
+// ✅ USE: Setup and teardown with Node.js test runner
+import { describe, it, beforeEach, afterEach } from 'node:test';
+
+describe('Database tests', () => {
+  beforeEach(async () => {
+    // Setup test database
+  });
+  
+  afterEach(async () => {
+    // Clean up test database
+  });
+  
+  it('should insert a record', async () => {
+    // Test implementation
+  });
+});
+```
+
+### Mocking
+```typescript
+// ❌ AVOID: Using Sinon for mocking
+import sinon from 'sinon';
+const stub = sinon.stub(object, 'method').returns(value);
+
+// ✅ USE: Node.js test runner mocking
+import { mock } from 'node:test';
+const mockFn = mock.fn((arg) => 'mocked result');
+// or
+const mockObject = mock.method(object, 'method', () => 'mocked result');
+```
+
+### Subtests and Test Organization
+```typescript
+// ✅ USE: Nested tests for better organization
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+
+describe('User Service', () => {
+  describe('registration', () => {
+    it('should create new user', async () => {
+      // Test implementation
+    });
+
+    it('should validate email', async () => {
+      // Test implementation
+    });
+  });
+
+  describe('authentication', () => {
+    it('should login user', async () => {
+      // Test implementation
+    });
+
+    it('should handle invalid credentials', async () => {
+      // Test implementation
+    });
+  });
+});
+```
+
+### Custom Assertions
+```typescript
+// ❌ AVOID: Chai custom assertions
+import { expect } from 'chai';
+expect(response).to.have.status(200);
+
+// ✅ USE: Node.js assert with custom messages
+import assert from 'node:assert/strict';
+assert.equal(response.status, 200, 'Expected successful response status');
+
+// Create reusable custom assertions
+function assertSuccessResponse(response) {
+  assert.equal(response.status, 200, 'Expected successful response');
+  assert.equal(typeof response.data, 'object', 'Expected response data to be an object');
+}
+``` 
