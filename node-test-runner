@@ -1,0 +1,64 @@
+# Node.js Test Runner Guidelines
+
+## Key Points
+- **Use Node.js Test Runner**: Always use the built-in Node.js test runner instead of Mocha and Chai
+- **Modern Approach**: Node.js test runner provides native testing capabilities without external dependencies
+- **Compatible with TypeScript**: Works well with TypeScript projects through tsx
+- **Built-in Performance**: Better performance as it's built into Node.js
+- **Native ESM Support**: First-class support for ES Modules
+- **Anchor Integration**: Seamlessly works with Anchor projects
+
+## Implementation Guide
+
+1. Replace Mocha/Chai dependencies with Node.js test runner:
+
+```json
+// package.json
+{
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "test:coverage": "node --test --experimental-test-coverage"
+  }
+}
+```
+
+2. Add TypeScript support if needed:
+
+```json
+// package.json
+{
+  "scripts": {
+    "test": "node --import tsx --test",
+    "test:watch": "node --import tsx --test --watch",
+    "test:coverage": "node --import tsx --test --experimental-test-coverage"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "@types/node": "latest"
+  }
+}
+```
+
+3. For Anchor projects, update Anchor.toml:
+
+```toml
+[scripts]
+test = "yarn test"  # This will use the Node.js test runner configuration from package.json
+```
+
+Remove ts-mocha and related dependencies from package.json:
+```json
+// ❌ REMOVE these from devDependencies
+{
+  "@types/chai": "^4.3.0",
+  "@types/mocha": "^9.0.0",
+  "chai": "^4.3.4",
+  "mocha": "^9.0.3",
+  "ts-mocha": "^10.0.0"
+}
+```
+
+## Test Structure
+
+### Basic Test Example 

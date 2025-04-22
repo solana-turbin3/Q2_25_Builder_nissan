@@ -1,12 +1,12 @@
 [package]
-name = "escrow-anchor-2"
+name = "escrow-anchor"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "escrow_anchor_2"
+name = "escrow_anchor"
 
 [features]
 default = []

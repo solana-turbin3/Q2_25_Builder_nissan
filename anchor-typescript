@@ -1,0 +1,174 @@
+# Anchor TypeScript Guidelines
+
+## Key Points
+- Use Node.js test runner instead of Mocha/Chai
+- Follow TypeScript best practices
+- Properly type all Anchor interactions
+- Use proper error handling
+
+## Test File Structure
+
+1. **Imports**:
+```typescript
+import { describe, it, before } from 'node:test';
+import { ok, equal, deepEqual } from 'node:assert/strict';
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { YourProgram } from "../target/types/your_program";
+```
+
+2. **Test Suite Setup**:
+```typescript
+describe('Program Tests', () => {
+  // Provider setup
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+
+  // Program setup
+  const program = anchor.workspace.YourProgram as Program<YourProgram>;
+  
+  // Common variables
+  const user = provider.wallet.publicKey;
+  let pdaAccount: anchor.web3.PublicKey;
+
+  before(async () => {
+    // PDA derivation and other setup
+    [pdaAccount] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("seed"), user.toBuffer()],
+      program.programId
+    );
+  });
+});
+```
+
+3. **Test Cases**:
+```typescript
+it('Test Description', async () => {
+  try {
+    // Arrange - Setup test data
+    const preBalance = await provider.connection.getBalance(account);
+
+    // Act - Perform the operation
+    await program.methods
+      .someInstruction()
+      .accounts({
+        user: user,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    // Assert - Verify the results
+    const postBalance = await provider.connection.getBalance(account);
+    ok(postBalance > preBalance, "Balance should increase");
+  } catch (error) {
+    console.error('Test failed:', error);
+    throw error;
+  }
+});
+```
+
+## Best Practices
+
+1. **Type Safety**:
+```typescript
+// ✅ DO: Use proper types
+let accountInfo: anchor.web3.AccountInfo;
+let balance: anchor.BN;
+
+// ❌ DON'T: Use any or unknown
+let accountInfo: any;
+```
+
+2. **Error Handling**:
+```typescript
+// ✅ DO: Use try/catch with proper error handling
+try {
+  await program.methods.instruction().rpc();
+} catch (error) {
+  if (error instanceof anchor.AnchorError) {
+    console.error('Program Error:', error.error.errorMessage);
+  }
+  throw error;
+}
+
+// ❌ DON'T: Leave errors unhandled
+await program.methods.instruction().rpc();
+```
+
+3. **PDA Handling**:
+```typescript
+// ✅ DO: Use proper PDA derivation
+const [pda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
+  [Buffer.from("seed"), account.toBuffer()],
+  program.programId
+);
+
+// ❌ DON'T: Use magic strings or hardcoded values
+const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
+  ["seed", account.toBuffer()],
+  program.programId
+);
+```
+
+4. **Assertions**:
+```typescript
+// ✅ DO: Use descriptive messages
+ok(condition, "Detailed message about what should be true");
+equal(actual, expected, "Detailed message about what should be equal");
+
+// ❌ DON'T: Use assertions without messages
+ok(condition);
+equal(actual, expected);
+```
+
+## Common Patterns
+
+1. **Account Creation**:
+```typescript
+// Create an account
+await program.methods
+  .initialize()
+  .accounts({
+    user: provider.wallet.publicKey,
+    newAccount: newAccountKp.publicKey,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .signers([newAccountKp])
+  .rpc();
+```
+
+2. **Balance Checks**:
+```typescript
+// Check SOL balance changes
+const preBalance = await provider.connection.getBalance(account);
+await program.methods.deposit().rpc();
+const postBalance = await provider.connection.getBalance(account);
+ok(postBalance > preBalance, "Balance should increase");
+```
+
+3. **Account Data Verification**:
+```typescript
+// Verify account data
+const accountData = await program.account.someAccount.fetch(accountPda);
+equal(accountData.owner.toBase58(), user.toBase58(), "Owner should match");
+ok(accountData.amount.gt(new anchor.BN(0)), "Amount should be positive");
+```
+
+4. **Transaction Error Testing**:
+```typescript
+// Test for expected errors
+await rejects(
+  async () => {
+    await program.methods
+      .someInstruction()
+      .accounts({
+        user: wrongUser.publicKey,
+      })
+      .rpc();
+  },
+  (error: anchor.AnchorError) => {
+    equal(error.error.errorCode.code, "ConstraintSigner");
+    return true;
+  }
+);
+``` 
