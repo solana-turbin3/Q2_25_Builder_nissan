@@ -1,7 +1,7 @@
 # TicketFair - TURBIN3 Builders Cohort Capstone Project
 
 **Student**: Nissan Dookeran  
-**Discord**: @redditech  
+**Discord**: @nissan1  
 **Submission Date**: May 22, 2025  
 **Project**: Decentralized Event Ticketing Platform  
 
